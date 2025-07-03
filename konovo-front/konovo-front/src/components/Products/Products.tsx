@@ -61,13 +61,13 @@ export default function Products() {
           {isCategoryOpen ? <FaChevronUp /> : <FaChevronDown />}
         </div>
 
-        <div
+        {/*<div
           className="flex justify-between items-center cursor-pointer mb-2"
           onClick={() => setIsCenaOpen(!isCenaOpen)}
         >
           <h3 className="text-lg font-semibold">Cena</h3>
           {isCenaOpen ? <FaChevronUp /> : <FaChevronDown />}
-        </div>
+        </div>*/}
         {isCategoryOpen && (
           <ul className="space-y-2 mt-2">
             <li>

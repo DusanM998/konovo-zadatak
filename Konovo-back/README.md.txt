@@ -38,3 +38,11 @@ Servis obradjuje podatke (povecava cenu monitora, menja opis proizvoda), filtrir
 git clone https://github.com/DusanM998/konovo-zadatak.git
 
 2. **Instaliraj zavisnosti sa Composer-om**
+
+composer install
+
+3. **Pokrenuti PHP server**
+
+php -S localhost:8000 -t public
+
+

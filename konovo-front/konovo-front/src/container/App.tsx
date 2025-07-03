@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { setLoggedInUser } from "../storage/redux/userAuthSlice";
 import ProtectedRoute from "./ProtectedRoute";
 import { Products, SpecificProduct } from "../components/Products";
+import Kontakt from "../pages/Kontakt";
 
 function App() {
   const dispatch = useDispatch();
@@ -35,6 +36,7 @@ function App() {
               </ProtectedRoute>}
             ></Route>
             <Route path="/product/:id" element={<SpecificProduct />}></Route>
+            <Route path="/kontakt" element={<Kontakt />}></Route>
         </Routes>
       </main>
       <Footer />

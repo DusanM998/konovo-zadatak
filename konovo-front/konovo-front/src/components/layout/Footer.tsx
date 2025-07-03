@@ -12,9 +12,25 @@ import siguranPartner from "../../assets/images/siguran-partner.png";
 import support from "../../assets/images/support.png";
 import uvekDostupni from "../../assets/images/uvek-dostupni.png";
 import { categoriesFooter } from "../../utility/types";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../storage/redux/store";
+import LoginModal from "../login/LoginModal";
 
 const Footer = () => {
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const navigate = useNavigate();
+  const user = useSelector((state: RootState) => state.userAuthStore);
+
+  const handleOfferClick = () => {
+    if (user.username) {
+      navigate("/products");
+    } else {
+      setShowLoginModal(true);
+    }
+  };
+
   return (
     <footer className="bg-black text-white pt-10 px-6 lg:px-20">
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center text-sm border-b border-gray-700 pb-8">
@@ -112,9 +128,21 @@ const Footer = () => {
         <div>
           <p className="font-semibold mb-3">KONOVO.RS</p>
           <ul className="space-y-1">
-            <li><a href="#" className="hover:text-orange-500">Kontakt</a></li>
-            <li><a href="#" className="hover:text-orange-500">O Nama</a></li>
-            <li><a href="#" className="hover:text-orange-500">Naš Asortiman</a></li>
+            <li>
+              <a href="/kontakt" className="hover:text-orange-500">
+                Kontakt
+              </a>
+            </li>
+            <li>
+              <a href="#" className="hover:text-orange-500">
+                O Nama
+              </a>
+            </li>
+            <li>
+              <a onClick={handleOfferClick} className="hover:text-orange-500">
+                Naš Asortiman
+              </a>
+            </li>
           </ul>
         </div>
       </div>
@@ -123,6 +151,9 @@ const Footer = () => {
         © <strong className="text-white">KONOVO DOO</strong> 2025. Sva prava
         zadržana
       </div>
+      {showLoginModal && (
+        <LoginModal onClose={() => setShowLoginModal(false)} />
+      )}
     </footer>
   );
 };
