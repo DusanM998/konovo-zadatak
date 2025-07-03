@@ -34,3 +34,11 @@ export const slides = [
     label: "Profesionalno",
   },
 ];
+
+export const categoriesFooter = [
+  "Laptopovi i oprema",
+  "Mini PC i desktop računari",
+  "Računarske komponente",
+  "Monitori",
+  "Računarske periferije"
+];

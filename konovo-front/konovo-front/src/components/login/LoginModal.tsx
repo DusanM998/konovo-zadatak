@@ -3,20 +3,23 @@ import { useState, type FormEvent } from "react";
 import { FaEye, FaEyeSlash, FaTimes } from "react-icons/fa";
 import { useLoginUserMutation } from "../../apis/userAuthApi";
 import toastNotify from "../../helper/toastNotify";
+import { useDispatch } from "react-redux";
+import { setLoggedInUser } from "../../storage/redux/userAuthSlice";
+import { useNavigate } from "react-router-dom";
 
 type LoginModalProps = {
   onClose: () => void;
-  onLoginSuccess: (username: string) => void;
 };
 
 export default function LoginModal({
   onClose,
-  onLoginSuccess,
 }: LoginModalProps) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loginUser, { isLoading, isError }] = useLoginUserMutation();
   const [showPassword, setShowPassword] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -27,8 +30,11 @@ export default function LoginModal({
 
       localStorage.setItem("token", result.token);
       localStorage.setItem("username", username);
-      onLoginSuccess(username);
+
+      dispatch(setLoggedInUser({username, password}));
+      
       toastNotify("Uspesna prijava! Dobrodosli!", "success");
+      navigate("/products");
       onClose();
     } catch (error) {
       console.error("Greška prilikom prijave:", error);

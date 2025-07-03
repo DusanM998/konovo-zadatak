@@ -1,9 +1,29 @@
 import { useEffect, useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { slides } from "../utility/types";
+import { useNavigate } from "react-router-dom";
+import LoginModal from "../components/login/LoginModal";
+import { useSelector } from "react-redux";
+import type { RootState } from "../storage/redux/store";
 
 const MainPage = () => {
   const [current, setCurrent] = useState(0);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const navigate = useNavigate();
+  const user = useSelector((state: RootState) => state.userAuthStore);
+
+  const handleOfferClick = () => {
+    if (user.username) {
+      navigate("/products");
+    } else {
+      setShowLoginModal(true);
+    }
+  };
+
+  /*const handleLoginSuccess = () => {
+    setShowLoginModal(false);
+    navigate("/products");
+  };*/
 
   // Automatska smena slajda
   useEffect(() => {
@@ -50,6 +70,7 @@ const MainPage = () => {
               <button
                 className="bg-orange-500 text-white font-semibold
                px-6 py-2 rounded-full hover:bg-orange-600 transition"
+                onClick={handleOfferClick}
               >
                 Pogledaj Ponudu
               </button>
@@ -86,6 +107,11 @@ const MainPage = () => {
           ))}
         </div>
       </div>
+      {showLoginModal && (
+        <LoginModal
+          onClose={() => setShowLoginModal(false)}
+        />
+      )}
     </div>
   );
 };
