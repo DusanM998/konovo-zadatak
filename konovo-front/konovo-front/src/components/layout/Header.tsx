@@ -203,6 +203,7 @@ const Header = () => {
                     ? "/kontakt"
                     : "#"
                 }
+                onClick={item === "Proizvodi" ? handleOfferClick : undefined}
                 className="block w-full text-left hover:text-orange-500"
               >
                 {item}
@@ -223,7 +224,7 @@ const Header = () => {
                   ? "/kontakt"
                   : "#"
               }
-              onClick={item === "Proizvodi" ? handleOfferClick : null}
+              onClick={item === "Proizvodi" ? handleOfferClick : undefined}
               className={`hover:text-orange-500 ${
                 item === "Proizvodi" ? "text-orange-600 font-medium" : ""
               }`}
