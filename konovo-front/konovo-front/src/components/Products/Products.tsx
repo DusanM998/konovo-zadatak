@@ -27,7 +27,7 @@ export default function Products() {
   if (isLoading) {
     return (
       <div className="text-center mt-10 text-orange-600 font-semibold">
-        Loading Products...
+        Ucitavanje proizvoda...
       </div>
     );
   }
@@ -35,7 +35,7 @@ export default function Products() {
   if (isError) {
     return (
       <div className="text-center mt-10 text-orange-600 font-semibold">
-        Error while loading products!
+        Greska pri ucitavanju proizvoda!
       </div>
     );
   }

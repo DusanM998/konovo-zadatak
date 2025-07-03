@@ -133,11 +133,7 @@ const Footer = () => {
                 Kontakt
               </a>
             </li>
-            <li>
-              <a href="#" className="hover:text-orange-500">
-                O Nama
-              </a>
-            </li>
+            
             <li>
               <a onClick={handleOfferClick} className="hover:text-orange-500">
                 Naš Asortiman

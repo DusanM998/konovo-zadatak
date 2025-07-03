@@ -1,4 +1,5 @@
 import maloprodajaSlika from "../assets/images/Maloprodaja.png";
+import karticnoPlacanje from "../assets/images/karticno-placanje.svg";
 
 export default function Kontakt() {
   return (
@@ -18,7 +19,7 @@ export default function Kontakt() {
           <iframe
             src="https://www.google.com/maps?q=Ratka%20Mitrovi%C4%87a%20134,%20Beograd&output=embed"
             width="100%"
-            height="300"
+            height="100%"
             style={{ border: 0 }}
             allowFullScreen={true}
             loading="lazy"
@@ -32,38 +33,51 @@ export default function Kontakt() {
           <p className="mt-2">Maloprodaja: (+381) 60 5858-159</p>
           <p>prodaja@konovo.rs</p>
           <p className="mt-2">Veleprodaja: (+381) 60 5858-864</p>
-          <p>veleprodaja@konovo.rs</p>
+          <p className="mb-2">veleprodaja@konovo.rs</p>
+          <hr />
+          <h2 className="text-2xl font-bold mt-2 mb-2">Poslovni podaci</h2>
+          <p>Privredno društvo KONOVO doo 11030 Beograd</p>
+          <p className="mt-2">PIB: 111497958</p>
+          <p>Matični broj: 21491128</p>
+          <p className="mt-4">PEPDV: 638416</p>
+          <p className="mt-4">Šifra delatnosti: 4651 – Trgovina na velikim računarima, računarskom opremom i softverima</p>
         </div>
         <div className="col-span-1 bg-white rounded-lg shadow-lg p-6">
           <h2 className="text-2xl font-bold mb-2">Radno Vreme</h2>
           <ul>
-            <li className="flex justify-between border-b py-1">
+            <li className="flex justify-between py-1 text-xl">
               <span>Ponedeljak</span>
               <span>09:00 - 21:00</span>
             </li>
-            <li className="flex justify-between border-b py-1">
+            <li className="flex justify-between py-1 text-xl">
               <span>Utorak</span>
               <span>09:00 - 21:00</span>
             </li>
-            <li className="flex justify-between border-b py-1">
+            <li className="flex justify-between py-1 text-xl">
               <span>Sreda</span>
               <span>09:00 - 21:00</span>
             </li>
-            <li className="flex justify-between border-b py-1">
+            <li className="flex justify-between py-1 text-xl">
               <span>Četvrtak</span>
               <span>09:00 - 21:00</span>
             </li>
-            <li className="flex justify-between border-b py-1">
+            <li className="flex justify-between py-1 text-xl">
               <span>Petak</span>
               <span>09:00 - 21:00</span>
             </li>
-            <li className="flex justify-between border-b py-1 text-orange-600 font-semibold">
+            <li className="flex justify-between py-1 text-orange-600 font-semibold text-xl">
               <span>Subota</span>
               <span>10:00 - 20:00</span>
             </li>
-            <li className="flex justify-between border-b py-1 text-orange-600 font-semibold">
+            <li className="flex justify-between border-b py-1 text-orange-600 font-semibold text-xl">
               <span>Nedelja</span>
               <span>Neradan dan</span>
+            </li>
+            <li className="pt-4 flex justify-between text-xl">
+              <span>Mogucnost placanja</span>
+            </li>
+            <li className="flex justify-between pt-2">
+              <img src={karticnoPlacanje} alt="Kartično plaćanje" />
             </li>
           </ul>
         </div>

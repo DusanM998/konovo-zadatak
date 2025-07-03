@@ -9,7 +9,7 @@ import { logoutUser } from "../../storage/redux/userAuthSlice";
 import { useGetAllProductsQuery } from "../../apis/productApi";
 import type { ProductModel } from "../../interfaces/productModel";
 
-const navItems = ["Proizvodi", "Kontakt", "About"];
+const navItems = ["Proizvodi", "Kontakt"];
 
 const Header = () => {
   const navigate = useNavigate();
@@ -19,6 +19,14 @@ const Header = () => {
   const user = useSelector((state: RootState) => state.userAuthStore);
   const dispatch = useDispatch();
   const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  const handleOfferClick = () => {
+    if (user.username) {
+      navigate("/products");
+    } else {
+      setIsLoginModalOpen(true);
+    }
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -86,7 +94,7 @@ const Header = () => {
                 <div className="flex flex-col w-[400px]">
                   <div
                     className="flex items-center border border-gray-500 rounded-full
-             overflow-hidden bg-white text-black"
+                      overflow-hidden bg-white text-black"
                   >
                     <input
                       type="text"
@@ -186,12 +194,19 @@ const Header = () => {
         {menuOpen && (
           <div className="md:hidden px-4 py-2 space-y-2">
             {navItems.map((item) => (
-              <button
+              <Link
                 key={item}
+                to={
+                  item === "Proizvodi"
+                    ? "/products"
+                    : item === "Kontakt"
+                    ? "/kontakt"
+                    : "#"
+                }
                 className="block w-full text-left hover:text-orange-500"
               >
                 {item}
-              </button>
+              </Link>
             ))}
           </div>
         )}
@@ -199,14 +214,22 @@ const Header = () => {
         {/* Desktop meni */}
         <div className="max-w-7xl mx-auto px-4 hidden md:flex space-x-6 text-sm py-2">
           {navItems.map((item) => (
-            <button
+            <Link
               key={item}
+              to={
+                item === "Proizvodi"
+                  ? "/products"
+                  : item === "Kontakt"
+                  ? "/kontakt"
+                  : "#"
+              }
+              onClick={item === "Proizvodi" ? handleOfferClick : null}
               className={`hover:text-orange-500 ${
                 item === "Proizvodi" ? "text-orange-600 font-medium" : ""
               }`}
             >
               {item}
-            </button>
+            </Link>
           ))}
         </div>
       </nav>
