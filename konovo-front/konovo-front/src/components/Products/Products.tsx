@@ -85,7 +85,9 @@ export default function Products() {
                 <button
                   onClick={() => setSelectedCategory(category)}
                   className={`block w-full text-left rounded px-2 py-1 hover:bg-orange-100 ${
-                    selectedCategory === category ? "bg-orange-200 font-semibold" : ""
+                    selectedCategory === category
+                      ? "bg-orange-200 font-semibold"
+                      : ""
                   }`}
                 >
                   {category}
@@ -103,11 +105,13 @@ export default function Products() {
               key={product.sif_product}
               className="border rounded-lg shadow hover:shadow-md transition p-4 flex flex-col"
             >
-              <img
-                src={product.imgsrc}
-                alt={product.naziv}
-                className="w-full h-48 object-contain mb-4"
-              />
+              <Link to={`/product/${product.sif_product}`}>
+                <img
+                  src={product.imgsrc}
+                  alt={product.naziv}
+                  className="w-full h-48 object-contain mb-4 cursor-pointer"
+                />
+              </Link>
               <h2 className="text-lg font-semibold mb-2">{product.naziv}</h2>
               <p className="text-sm text-gray-600 mb-1">SKU: {product.sku}</p>
               <p className="text-sm text-gray-600 mb-1">
