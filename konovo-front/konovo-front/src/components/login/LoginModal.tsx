@@ -55,7 +55,7 @@ export default function LoginModal({
           <h2 className="text-3xl font-bold mb-4">Dobrodošli!</h2>
           <p className="text-sm leading-relaxed">
             Prijavite se da biste nastavili korišćenje aplikacije i pristupili
-            svim funkcijama.
+            svim proizvodima.
           </p>
         </div>
 
