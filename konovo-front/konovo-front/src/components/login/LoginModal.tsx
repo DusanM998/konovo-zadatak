@@ -1,21 +1,39 @@
 import { motion } from "framer-motion";
 import { useState, type FormEvent } from "react";
-import { FaTimes } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaTimes } from "react-icons/fa";
+import { useLoginUserMutation } from "../../apis/userAuthApi";
+import toastNotify from "../../helper/toastNotify";
 
 type LoginModalProps = {
   onClose: () => void;
+  onLoginSuccess: (username: string) => void;
 };
 
-export default function LoginModal({ onClose }: LoginModalProps) {
+export default function LoginModal({
+  onClose,
+  onLoginSuccess,
+}: LoginModalProps) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loginUser, { isLoading, isError }] = useLoginUserMutation();
+  const [showPassword, setShowPassword] = useState(false);
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    console.log("Prijava:");
+    try {
+      const result = await loginUser({ username, password }).unwrap();
+      console.log("Rezultat prijave:", result);
 
-    onClose();
+      localStorage.setItem("token", result.token);
+      localStorage.setItem("username", username);
+      onLoginSuccess(username);
+      toastNotify("Uspesna prijava! Dobrodosli!", "success");
+      onClose();
+    } catch (error) {
+      console.error("Greška prilikom prijave:", error);
+      toastNotify("Pogresno korisnicko ime ili lozinka!", "error");
+    }
   }
 
   return (
@@ -56,20 +74,33 @@ export default function LoginModal({ onClose }: LoginModalProps) {
               required
               className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
-            <input
-              type="password"
-              placeholder="Lozinka"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-            />
+            <div className="relative w-full">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Lozinka"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="border border-gray-300 rounded px-4 py-2 pr-12 w-full 
+               focus:outline-none focus:ring-2 focus:ring-orange-500"
+              />
+              <span
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
+            </div>
             <button
               type="submit"
               className="bg-orange-500 text-white rounded py-2 font-semibold hover:bg-orange-600 transition"
+              disabled={isLoading}
             >
-              Prijavi se
+              {isLoading ? "Prijava..." : "Prijavi se"}
             </button>
+            {isError && (
+              <p className="text-red-500 text-sm">Greska pri prijavi!</p>
+            )}
           </form>
         </div>
       </motion.div>

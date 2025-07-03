@@ -31,7 +31,7 @@ class ApiClient
         $data = json_decode($response->getBody(), true);
         $this->token = $data['token'];
 
-        var_dump($this->token); // <--- Debug
+        //var_dump($this->token); // <--- Debug
     }
 
     public function get($uri)

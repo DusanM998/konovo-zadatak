@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/images/konovo_logo_light.png";
-import { FaSearch, FaUser, FaBars } from "react-icons/fa";
+import { FaSearch, FaUser, FaBars, FaSignOutAlt } from "react-icons/fa";
 import LoginModal from "../login/LoginModal";
+import store from "../../storage/redux/store";
 
 const navItems = ["Proizvodi", "Kontakt", "About"];
 
@@ -11,6 +12,24 @@ const Header = () => {
   const [search, setSearch] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [loggedInUser, setLoggedInUser] = useState<string | null>(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("username");
+    if (storedUser) {
+      setLoggedInUser(storedUser);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    setLoggedInUser(null);
+  };
+
+  const handleLoginSuccess = (username: string) => {
+    setLoggedInUser(username);
+  };
 
   return (
     <header className="w-full">
@@ -75,12 +94,28 @@ const Header = () => {
 
             <div className="flex-none flex items-center space-x-2">
               <FaUser className="mr-1" />
-              <button
-                className="hover:underline text-sm"
-                onClick={() => setIsLoginModalOpen(true)}
-              >
-                Uloguj Se / Registruj Se
-              </button>
+              {loggedInUser ? (
+                <>
+                  <span className="text-sm">
+                    Dobrodosli, <b>{loggedInUser}</b>
+                  </span>
+                  <button
+                    className="flex items-center gap-2
+                     bg-orange-500 text-white text-sm px-4 py-1.5 rounded-full hover:bg-orange-600 transition"
+                    onClick={handleLogout}
+                  >
+                    <span>Logout</span>
+                    <FaSignOutAlt />
+                  </button>
+                </>
+              ) : (
+                <button
+                  className="hover:underline text-sm"
+                  onClick={() => setIsLoginModalOpen(true)}
+                >
+                  Uloguj Se / Registruj Se
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -135,7 +170,10 @@ const Header = () => {
         </div>
       </nav>
       {isLoginModalOpen && (
-        <LoginModal onClose={() => setIsLoginModalOpen(false)} />
+        <LoginModal
+          onClose={() => setIsLoginModalOpen(false)}
+          onLoginSuccess={handleLoginSuccess}
+        />
       )}
     </header>
   );
