@@ -22,8 +22,9 @@ $productService = new ProductService();
 
 if ($path === '/products' && $method === 'GET') {
     $category = $_GET['categoryName'] ?? null;
+    $brandName = $_GET['brandName'] ?? null;
     $search = $_GET['search'] ?? null;
-    $products = $productService->getProducts($category, $search);
+    $products = $productService->getProducts($category, $brandName, $search);
     echo json_encode($products, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 
 } elseif (preg_match('/\/products\/(\d+)/', $path, $matches) && $method === 'GET') {

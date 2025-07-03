@@ -21,7 +21,7 @@ class ProductService
         return $product;
     }
 
-    public function getProducts($category = null, $search = null)
+    public function getProducts($category = null, $brandName = null, $search = null)
     {
         //dohvata sve proizvode sa eksternog api-ja
         $products = $this->apiClient->get('products');
@@ -33,6 +33,13 @@ class ProductService
         if ($category) {
             $products = array_filter($products, function ($p) use ($category) {
                 return strtolower($p['categoryName']) === strtolower($category);
+            });
+        }
+
+        //filter po brandName
+        if ($brandName) {
+            $products = array_filter($products, function ($p) use ($brandName) {
+                return strtolower($p['brandName']) === strtolower($brandName);
             });
         }
 

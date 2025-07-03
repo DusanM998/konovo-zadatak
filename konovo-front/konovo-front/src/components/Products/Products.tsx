@@ -7,22 +7,25 @@ import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 export default function Products() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [isCategoryOpen, setIsCategoryOpen] = useState<boolean>(false);
-  const [isCenaOpen, setIsCenaOpen] = useState<boolean>(false);
+  const [isBrandOpen, setIsBrandOpen] = useState<boolean>(false);
   const [searchParams] = useSearchParams();
   const categoryFromQuery = searchParams.get("categoryName");
+  const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
 
   useEffect(() => {
     setSelectedCategory(categoryFromQuery);
   }, [categoryFromQuery]);
+
+  const queryParams: Record<string, string> = {};
+  if (selectedCategory) queryParams.categoryName = selectedCategory;
+  if (selectedBrand) queryParams.brandName = selectedBrand;
 
   // API poziv sa parametrom filtriranja
   const {
     data: products,
     isLoading,
     isError,
-  } = useGetAllProductsQuery(
-    selectedCategory ? { categoryName: selectedCategory } : {}
-  );
+  } = useGetAllProductsQuery(queryParams);
 
   if (isLoading) {
     return (
@@ -49,6 +52,14 @@ export default function Products() {
     )
   ).sort();
 
+  const brands = Array.from(
+    new Set<string>(
+      products
+        ?.map((product: ProductModel) => product.brandName)
+        .filter(Boolean)
+    )
+  ).sort();
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6">
       {/* Sidebar */}
@@ -60,14 +71,6 @@ export default function Products() {
           <h3 className="text-lg font-semibold">Kategorije</h3>
           {isCategoryOpen ? <FaChevronUp /> : <FaChevronDown />}
         </div>
-
-        {/*<div
-          className="flex justify-between items-center cursor-pointer mb-2"
-          onClick={() => setIsCenaOpen(!isCenaOpen)}
-        >
-          <h3 className="text-lg font-semibold">Cena</h3>
-          {isCenaOpen ? <FaChevronUp /> : <FaChevronDown />}
-        </div>*/}
         {isCategoryOpen && (
           <ul className="space-y-2 mt-2">
             <li>
@@ -91,6 +94,41 @@ export default function Products() {
                   }`}
                 >
                   {category}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+        <div
+          className="flex justify-between items-center cursor-pointer mb-2"
+          onClick={() => setIsBrandOpen(!isBrandOpen)}
+        >
+          <h3 className="text-lg font-semibold">Brend</h3>
+          {isBrandOpen ? <FaChevronUp /> : <FaChevronDown />}
+        </div>
+        {isBrandOpen && (
+          <ul className="space-y-2 mt-2">
+            <li>
+              <button
+                onClick={() => setSelectedBrand(null)}
+                className={`block w-full text-left rounded px-2 py-1 hover:bg-orange-100 ${
+                  selectedCategory === null ? "bg-orange-200 font-semibold" : ""
+                }`}
+              >
+                Svi brendovi
+              </button>
+            </li>
+            {brands.map((brand) => (
+              <li key={brand}>
+                <button
+                  onClick={() => setSelectedBrand(brand)}
+                  className={`block w-full text-left rounded px-2 py-1 hover:bg-orange-100 ${
+                    selectedBrand === brand
+                      ? "bg-orange-200 font-semibold"
+                      : ""
+                  }`}
+                >
+                  {brand}
                 </button>
               </li>
             ))}

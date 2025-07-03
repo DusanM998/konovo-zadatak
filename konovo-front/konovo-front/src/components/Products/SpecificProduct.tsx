@@ -9,7 +9,7 @@ const SpecificProduct = () => {
   if (isLoading) {
     return (
       <div className="text-center mt-10 text-orange-600 font-semibold">
-        Loading Products...
+        Ucitavanje Proizvoda...
       </div>
     );
   }
@@ -17,7 +17,7 @@ const SpecificProduct = () => {
   if (isError) {
     return (
       <div className="text-center mt-10 text-orange-600 font-semibold">
-        Error while loading products!
+        Greska pri ucitavanju proizvoda!
       </div>
     );
   }
