@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/images/konovo_logo_light.png";
 import { FaSearch, FaUser, FaBars } from "react-icons/fa";
+import LoginModal from "../login/LoginModal";
 
 const navItems = ["Proizvodi", "Kontakt", "About"];
 
@@ -9,7 +10,7 @@ const Header = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   return (
     <header className="w-full">
@@ -55,8 +56,10 @@ const Header = () => {
 
             {/* Search bar za proizvode*/}
             <div className="flex-grow flex justify-center">
-              <div className="flex items-center border border-gray-500 rounded-full
-               overflow-hidden bg-white text-black w-[400px]">
+              <div
+                className="flex items-center border border-gray-500 rounded-full
+               overflow-hidden bg-white text-black w-[400px]"
+              >
                 <input
                   type="text"
                   placeholder="Pretraga proizvoda"
@@ -74,7 +77,7 @@ const Header = () => {
               <FaUser className="mr-1" />
               <button
                 className="hover:underline text-sm"
-                onClick={() => navigate("/login")}
+                onClick={() => setIsLoginModalOpen(true)}
               >
                 Uloguj Se / Registruj Se
               </button>
@@ -84,8 +87,10 @@ const Header = () => {
 
         {/* Mobile search bar */}
         <div className="md:hidden px-4 pb-3">
-          <div className="flex items-center border border-gray-500
-           rounded-full overflow-hidden bg-white text-black">
+          <div
+            className="flex items-center border border-gray-500
+           rounded-full overflow-hidden bg-white text-black"
+          >
             <input
               type="text"
               placeholder="Pretraga proizvoda"
@@ -129,6 +134,9 @@ const Header = () => {
           ))}
         </div>
       </nav>
+      {isLoginModalOpen && (
+        <LoginModal onClose={() => setIsLoginModalOpen(false)} />
+      )}
     </header>
   );
 };
