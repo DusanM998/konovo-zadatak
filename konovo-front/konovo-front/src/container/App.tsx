@@ -25,7 +25,7 @@ function App() {
   return (
     <div>
       <Header />
-      <main className="w-screen m-0 p-0">
+      <main className="w-screen m-0 p-0 bg-[#fdfbf6]">
         <Routes>
           <Route path="/" element={<MainPage />}></Route>
           <Route 

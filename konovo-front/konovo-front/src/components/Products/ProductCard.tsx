@@ -7,7 +7,7 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   return (
-    <div className="border rounded-lg shadow hover:shadow-md transition p-4 flex flex-col hover:scale-102">
+    <div className="border border-gray-300/50 bg-white rounded-lg transition p-4 flex flex-col hover:scale-102 hover:shadow-sm">
       <Link to={`/product/${product.sif_product}`}>
         <img
           src={product.imgsrc}
