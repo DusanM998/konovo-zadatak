@@ -135,7 +135,7 @@ const Footer = () => {
             </li>
             
             <li>
-              <a onClick={handleOfferClick} className="hover:text-orange-500">
+              <a onClick={handleOfferClick} className="hover:text-orange-500 cursor-pointer">
                 Naš Asortiman
               </a>
             </li>

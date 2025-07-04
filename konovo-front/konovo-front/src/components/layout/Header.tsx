@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/konovo_logo_light.png";
 import { FaSearch, FaUser, FaBars, FaSignOutAlt } from "react-icons/fa";
@@ -19,6 +19,8 @@ const Header = () => {
   const user = useSelector((state: RootState) => state.userAuthStore);
   const dispatch = useDispatch();
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleOfferClick = () => {
     if (user.username) {
@@ -27,14 +29,6 @@ const Header = () => {
       setIsLoginModalOpen(true);
     }
   };
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(search);
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [search]);
 
   const { data: results = [], isLoading } = useGetAllProductsQuery(
     debouncedSearch.length >= 2 ? { search: debouncedSearch } : {},
@@ -45,6 +39,37 @@ const Header = () => {
     localStorage.removeItem("token");
     dispatch(logoutUser());
   };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+
+      if (search.length >= 2) {
+        setIsDropdownOpen(true);
+      } else {
+        setIsDropdownOpen(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false); //Sakriva dropdown meni za search
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
 
   return (
     <header className="w-full">
@@ -91,7 +116,7 @@ const Header = () => {
             {/* Search bar za proizvode - samo ako je korisnik logovan*/}
             <div className="flex-grow flex justify-center">
               {user.username ? (
-                <div className="flex flex-col w-[400px]">
+                <div className="flex flex-col w-[400px]" ref={dropdownRef}>
                   <div
                     className="flex items-center border border-gray-500 rounded-full
                       overflow-hidden bg-white text-black"
@@ -102,6 +127,11 @@ const Header = () => {
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                       className="px-3 py-2 outline-none w-full"
+                      onFocus={() => {
+                        if (debouncedSearch.length >= 2) {
+                          setIsDropdownOpen(true);
+                        }
+                      }}
                     />
                     <button className="bg-orange-500 px-4 py-2 text-white rounded-full">
                       <FaSearch />
@@ -109,31 +139,51 @@ const Header = () => {
                   </div>
 
                   {/* Filtrirani proizvodi po nazivu */}
-                  {debouncedSearch.length >= 2 && results.length > 0 && (
-                    <ul className="bg-white border border-gray-300 rounded-b-lg shadow mt-1 max-h-60 overflow-y-auto">
-                      {results.map((product: ProductModel) => (
-                        <li key={product.sif_product}>
-                          <Link
-                            to={`/product/${product.sif_product}`}
-                            className="flex items-center gap-3 px-4 py-2 hover:bg-orange-100 text-sm text-black"
-                          >
-                            <img
-                              src={product.imgsrc}
-                              alt={product.naziv}
-                              className="w-10 h-10 object-contain border rounded"
-                            />
-                            <span>{product.naziv}</span>
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                  {isDropdownOpen &&
+                    debouncedSearch.length >= 2 &&
+                    results.length > 0 && (
+                      <ul
+                        className={`absolute top-full left-0 w-full z-50 bg-white border border-gray-300 
+                        rounded-b-lg shadow max-h-60 overflow-y-auto transition-all 
+                        duration-200 ease-out transform origin-top ${
+                          results.length > 0
+                            ? "scale-y-100 opacity-100"
+                            : "scale-y-0 opacity-0"
+                        }`}
+                      >
+                        {results.map((product: ProductModel) => (
+                          <li key={product.sif_product}>
+                            <Link
+                              to={`/product/${product.sif_product}`}
+                              className="flex items-center gap-3 px-4 py-2 hover:bg-orange-100 text-sm text-black"
+                            >
+                              <img
+                                src={product.imgsrc}
+                                alt={product.naziv}
+                                className="w-10 h-10 object-contain border rounded"
+                              />
+                              <span>{product.naziv}</span>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
 
                   {/* Ako ne postoji proizvod sa imenom koje je korisnik uneo u search */}
-                  {debouncedSearch.length >= 2 &&
+                  {isDropdownOpen &&
+                    debouncedSearch.length >= 2 &&
                     !isLoading &&
                     results.length === 0 && (
-                      <div className="bg-white border border-gray-300 rounded-b-lg shadow mt-1 px-4 py-2 text-sm text-gray-600">
+                      <div
+                        className={`absolute top-full left-0 w-full z-50 bg-white border border-gray-300
+                          rounded-b-lg shadow px-4 py-2 text-sm text-gray-600 transition-all
+                          duration-200 ease-out transform origin-top ${
+                            debouncedSearch
+                              ? "scale-y-100 opacity-100"
+                              : "scale-y-0 opacity-0"
+                          }`}
+                        onBlur={() => setDebouncedSearch("")}
+                      >
                         Nema rezultata.
                       </div>
                     )}
@@ -181,6 +231,11 @@ const Header = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="px-3 py-2 outline-none w-full"
+              onFocus={() => {
+                if (debouncedSearch.length >= 2) {
+                  setIsDropdownOpen(true);
+                }
+              }}
             />
             <button className="bg-orange-500 px-4 py-2 text-white">
               <FaSearch />
