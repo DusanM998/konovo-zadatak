@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../storage/redux/userAuthSlice";
 import { useGetAllProductsQuery } from "../../apis/productApi";
 import type { ProductModel } from "../../interfaces/productModel";
+import { SearchedProducts } from "../Products";
 
 const navItems = ["Proizvodi", "Kontakt"];
 
@@ -97,12 +98,14 @@ const Header = () => {
 
           {/* Logo - Mobilni*/}
           <div className="absolute left-1/2 -translate-x-1/2 block md:hidden">
-            <img src={logo} alt="Konovo" className="h-8 mx-auto" />
+            <NavLink className="nav-link" aria-current="page" to="/">
+              <img src={logo} alt="Konovo" className="h-8" />
+            </NavLink>
           </div>
 
           {/* Login - Mobilni */}
           <div className="block md:hidden">
-            <button onClick={() => navigate("/login")}>
+            <button className="cursor-pointer" onClick={() => setIsLoginModalOpen(true)}>
               <FaUser />
             </button>
           </div>
@@ -139,54 +142,13 @@ const Header = () => {
                   </div>
 
                   {/* Filtrirani proizvodi po nazivu */}
-                  {isDropdownOpen &&
-                    debouncedSearch.length >= 2 &&
-                    results.length > 0 && (
-                      <ul
-                        className={`absolute top-full left-0 w-full z-50 bg-white border border-gray-300 
-                        rounded-b-lg shadow max-h-60 overflow-y-auto transition-all 
-                        duration-200 ease-out transform origin-top ${
-                          results.length > 0
-                            ? "scale-y-100 opacity-100"
-                            : "scale-y-0 opacity-0"
-                        }`}
-                      >
-                        {results.map((product: ProductModel) => (
-                          <li key={product.sif_product}>
-                            <Link
-                              to={`/product/${product.sif_product}`}
-                              className="flex items-center gap-3 px-4 py-2 hover:bg-orange-100 text-sm text-black"
-                            >
-                              <img
-                                src={product.imgsrc}
-                                alt={product.naziv}
-                                className="w-10 h-10 object-contain border rounded"
-                              />
-                              <span>{product.naziv}</span>
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-
-                  {/* Ako ne postoji proizvod sa imenom koje je korisnik uneo u search */}
-                  {isDropdownOpen &&
-                    debouncedSearch.length >= 2 &&
-                    !isLoading &&
-                    results.length === 0 && (
-                      <div
-                        className={`absolute top-full left-0 w-full z-50 bg-white border border-gray-300
-                          rounded-b-lg shadow px-4 py-2 text-sm text-gray-600 transition-all
-                          duration-200 ease-out transform origin-top ${
-                            debouncedSearch
-                              ? "scale-y-100 opacity-100"
-                              : "scale-y-0 opacity-0"
-                          }`}
-                        onBlur={() => setDebouncedSearch("")}
-                      >
-                        Nema rezultata.
-                      </div>
-                    )}
+                  <SearchedProducts
+                    results={results}
+                    isOpen={isDropdownOpen}
+                    isLoading={isLoading}
+                    query={debouncedSearch}
+                    onClose={() => setIsDropdownOpen(false)}
+                  />
                 </div>
               ) : null}
             </div>
@@ -220,27 +182,36 @@ const Header = () => {
         </div>
 
         {/* Mobile search bar */}
-        <div className="md:hidden px-4 pb-3">
-          <div
-            className="flex items-center border border-gray-500
+        <div className="md:hidden px-4 pb-3 relative">
+          {user.username ? (
+            <div
+              className="flex items-center border border-gray-500
            rounded-full overflow-hidden bg-white text-black"
-          >
-            <input
-              type="text"
-              placeholder="Pretraga proizvoda"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="px-3 py-2 outline-none w-full"
-              onFocus={() => {
-                if (debouncedSearch.length >= 2) {
-                  setIsDropdownOpen(true);
-                }
-              }}
-            />
-            <button className="bg-orange-500 px-4 py-2 text-white">
-              <FaSearch />
-            </button>
-          </div>
+            >
+              <input
+                type="text"
+                placeholder="Pretraga proizvoda"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="px-3 py-2 outline-none w-full"
+                onFocus={() => {
+                  if (debouncedSearch.length >= 2) {
+                    setIsDropdownOpen(true);
+                  }
+                }}
+              />
+              <button className="bg-orange-500 px-4 py-2 text-white">
+                <FaSearch />
+              </button>
+              <SearchedProducts
+                results={results}
+                isOpen={isDropdownOpen}
+                isLoading={isLoading}
+                query={debouncedSearch}
+                onClose={() => setIsDropdownOpen(false)}
+              />
+            </div>
+          ) : null}
         </div>
       </div>
 
