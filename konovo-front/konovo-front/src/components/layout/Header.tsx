@@ -74,17 +74,19 @@ const Header = () => {
 
   return (
     <header className="w-full">
-      <div className="bg-black text-white text-xs py-2 px-4 flex justify-between items-center">
+      <div className="bg-black text-white shadow-sm w-full">
+        <div className="max-w-7xl text-xs mx-auto px-4 py-3 flex items-center justify-between md:justify-between relative">
         <div className="space-x-4 hidden md:flex">
           <span>RATKA MITROVIĆA 134 BEOGRAD</span>
           <span>PRODAJA@KONOVO.RS</span>
           <span>PON - PET 09:00-21:00 SUB 10:00-20:00</span>
         </div>
-        <div className="text-right text-xs">
+        <div className="text-right">
           <a href="tel:+3810605858159" className="hover:underline">
             +381 060 5858-159, 011/4543-452
           </a>
         </div>
+      </div>
       </div>
 
       <div className="bg-black text-white shadow-sm w-full">

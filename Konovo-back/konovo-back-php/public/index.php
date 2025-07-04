@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Src\ProductService;
+use Src\Controllers\ProductService;
 use GuzzleHttp\Client;
 
 header("Access-Control-Allow-Origin: *");

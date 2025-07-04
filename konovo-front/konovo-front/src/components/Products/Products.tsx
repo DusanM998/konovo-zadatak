@@ -138,6 +138,7 @@ export default function Products() {
           <h3 className="text-lg font-semibold">Kategorije</h3>
           {isCategoryOpen ? <FaChevronUp /> : <FaChevronDown />}
         </div>
+        {/* Izbor kategorije za filter */}
         {isCategoryOpen && (
           <ul className="space-y-2 mt-2">
             <li>
@@ -173,6 +174,7 @@ export default function Products() {
           <h3 className="text-lg font-semibold">Brend</h3>
           {isBrandOpen ? <FaChevronUp /> : <FaChevronDown />}
         </div>
+        {/* Izbor brenda za filter po brendu*/}
         {isBrandOpen && (
           <ul className="space-y-2 mt-2">
             <li>
@@ -201,6 +203,7 @@ export default function Products() {
         )}
       </aside>
       <div>
+        {/* Sortiranje */}
         <div className="flex items-center justify-between mb-4 gap-2">
           <div className="flex items-center gap-2">
             <label className="text-sm">Proizvoda po stranici:</label>
@@ -241,7 +244,7 @@ export default function Products() {
           )}
         </div>
 
-        {/* Pagination controls */}
+        {/* Stranice za paginaciju */}
         {totalPages > 1 && (
           <div className="flex justify-center items-center mt-8 gap-2 flex-wrap">
             <button

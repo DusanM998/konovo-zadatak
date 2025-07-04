@@ -17,6 +17,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../storage/redux/store";
 import LoginModal from "../login/LoginModal";
+import footerImg from '../../assets/images/Footer-slika.png'
 
 const Footer = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -32,19 +33,19 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-black text-white pt-10 px-6 lg:px-20">
+    <footer className="bg-black text-white pt-10 px-6 lg:px-30">
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center text-sm border-b border-gray-700 pb-8">
         <div>
           <img
             src={dostava}
             alt="Besplatna dostava"
-            className="mx-auto mb-2 h-6"
+            className="mx-auto mb-2 h-12"
           />
           <p className="font-semibold">BESPLATNA DOSTAVA</p>
           <p>Za porudžbine preko 10.000 RSD.</p>
         </div>
         <div>
-          <img src={support} alt="24/7 Podrška" className="mx-auto mb-2 h-6" />
+          <img src={support} alt="24/7 Podrška" className="mx-auto mb-2 h-12" />
           <p className="font-semibold">24/7 PODRŠKA</p>
           <p>Stojimo vam na raspolaganju.</p>
         </div>
@@ -52,13 +53,13 @@ const Footer = () => {
           <img
             src={siguranPartner}
             alt="Siguran partner"
-            className="mx-auto mb-2 h-6"
+            className="mx-auto mb-2 h-12"
           />
           <p className="font-semibold">SIGURAN PARTNER</p>
           <p>Uvek otvoreni za saradnju.</p>
         </div>
         <div>
-          <img src={uvekDostupni} alt="Dostupni" className="mx-auto mb-2 h-6" />
+          <img src={uvekDostupni} alt="Dostupni" className="mx-auto mb-2 h-12" />
           <p className="font-semibold">UVEK DOSTUPNI</p>
           <p>Viber, Whatsapp, SMS, Poziv</p>
         </div>
@@ -140,6 +141,12 @@ const Footer = () => {
               </a>
             </li>
           </ul>
+        </div>
+        <div>
+          <img 
+            src={footerImg}
+            alt="footerImg"
+          />
         </div>
       </div>
 
