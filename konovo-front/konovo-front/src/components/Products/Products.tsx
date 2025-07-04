@@ -2,7 +2,16 @@ import { useSearchParams } from "react-router-dom";
 import { useGetAllProductsQuery } from "../../apis/productApi";
 import type { ProductModel } from "../../interfaces/productModel";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { FaAngleDoubleLeft, FaAngleDoubleRight, FaChevronDown, FaChevronLeft, FaChevronRight, FaChevronUp } from "react-icons/fa";
+import {
+  FaAngleDoubleLeft,
+  FaAngleDoubleRight,
+  FaChevronDown,
+  FaChevronLeft,
+  FaChevronRight,
+  FaChevronUp,
+  FaFilter,
+  FaTimes,
+} from "react-icons/fa";
 import ProductCard from "./ProductCard";
 
 export default function Products() {
@@ -19,6 +28,8 @@ export default function Products() {
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
 
   const [sortOption, setSortOption] = useState<string>("name-asc");
+
+  const [mobileFilterOpen, setMobileFilterOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (categoryFromQuery) {
@@ -128,9 +139,23 @@ export default function Products() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 h-[calc(100vh-64px)] md:flex gap-6">
+    <div className="max-w-7xl mx-auto px-4 py-8 h-[calc(100vh-64px)] flex flex-col md:flex-row gap-6">
       {/* Sidebar */}
-      <aside className="border bg-white rounded-lg border-gray-300/50 p-4 w-full md:w-[200px] h-full overflow-y-auto">
+      <div className="md:hidden flex justify-center items-center mb-4">
+        <button
+          onClick={() => setMobileFilterOpen(!mobileFilterOpen)}
+          className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded"
+        >
+          {mobileFilterOpen ? <FaTimes /> : <FaFilter />} Filteri
+        </button>
+      </div>
+      <aside
+        className={`bg-white border border-gray-300/50 rounded-lg p-4 w-full md:w-[200px] max-w-xs 
+          md:static md:block z-10 transition-all duration-300 ease-in-out 
+          ${
+            mobileFilterOpen ? "block" : "hidden"
+          } md:h-auto md:overflow-visible h-[200px] overflow-y-auto`}
+      >
         <div
           className="flex justify-between items-center cursor-pointer mb-2"
           onClick={() => setIsCategoryOpen(!isCategoryOpen)}
@@ -207,11 +232,11 @@ export default function Products() {
         <div className="flex items-center justify-between mb-4 gap-2">
           <div className="flex items-center gap-2">
             <label className="text-sm">Proizvoda po stranici:</label>
-            <select 
+            <select
               className="border border-gray-300/50 bg-white rounded-lg px-2 py-1 text-sm"
               value={itemsPerPage}
               onChange={(e) => setItemsPerPage(Number(e.target.value))}
-              >
+            >
               <option value={10}>10</option>
               <option value={15}>15</option>
               <option value={20}>20</option>
@@ -252,7 +277,7 @@ export default function Products() {
               className="px-3 py-2 cursor-pointer border rounded disabled:opacity-50"
               disabled={currentPage == 1}
             >
-              <FaAngleDoubleLeft  />
+              <FaAngleDoubleLeft />
             </button>
             <button
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -301,7 +326,7 @@ export default function Products() {
               className="px-3 py-2 cursor-pointer border rounded disabled:opacity-50"
               disabled={currentPage == totalPages}
             >
-              <FaAngleDoubleRight  />
+              <FaAngleDoubleRight />
             </button>
           </div>
         )}
