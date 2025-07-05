@@ -13,7 +13,7 @@ import support from "../../assets/images/support.png";
 import uvekDostupni from "../../assets/images/uvek-dostupni.png";
 import { categoriesFooter } from "../../utility/types";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../storage/redux/store";
 import LoginModal from "../login/LoginModal";
@@ -21,16 +21,25 @@ import footerImg from '../../assets/images/Footer-slika.png'
 
 const Footer = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [pendingCategory, setPendingCategory] = useState<string | null>(null);
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.userAuthStore);
 
-  const handleOfferClick = () => {
+  const handleOfferClick = (categoryName: string) => {
     if (user.username) {
-      navigate("/products");
+      navigate(`/products?categoryName=${encodeURIComponent(categoryName)}`);
     } else {
+      setPendingCategory(categoryName);
       setShowLoginModal(true);
     }
   };
+
+  useEffect(() => {
+    if(user.username && pendingCategory){
+      navigate(`/products?categoryName=${encodeURIComponent(pendingCategory)}`);
+      setPendingCategory(null);
+    }
+  }, [user.username, pendingCategory, navigate]);
 
   return (
     <footer className="bg-black text-white pt-10 px-6 lg:px-30">
@@ -113,14 +122,12 @@ const Footer = () => {
           <ul className="space-y-1">
             {categoriesFooter.map((categoryName) => (
               <li key={categoryName}>
-                <Link
-                  to={`/products?categoryName=${encodeURIComponent(
-                    categoryName
-                  )}`}
+                <button
                   className="hover:text-orange-500"
+                  onClick={() => handleOfferClick(categoryName)}
                 >
                   {categoryName}
-                </Link>
+                </button>
               </li>
             ))}
           </ul>
@@ -136,7 +143,7 @@ const Footer = () => {
             </li>
             
             <li>
-              <a onClick={handleOfferClick} className="hover:text-orange-500 cursor-pointer">
+              <a onClick={() => handleOfferClick("")} className="hover:text-orange-500 cursor-pointer">
                 Naš Asortiman
               </a>
             </li>
