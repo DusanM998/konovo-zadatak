@@ -18,7 +18,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       </Link>
 
       <p className="text-sm text-gray-700 mb-1">
-        Cena: {Number(product.price).toFixed(2)} RSD
+        <b>Cena: {Number(product.price).toFixed(2)} RSD</b>
       </p>
       <p className="text-sm text-gray-600 mb-1">Brend: {product.brandName}</p>
       <p className="text-sm text-gray-600 mb-1">

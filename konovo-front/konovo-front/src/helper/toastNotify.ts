@@ -4,7 +4,7 @@ const toastNotify = (message: string, type: TypeOptions= "success") => {
     toast(message, {
         type: type,
         position: "top-center",
-        autoClose: 5000,
+        autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,

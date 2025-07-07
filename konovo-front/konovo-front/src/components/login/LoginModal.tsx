@@ -33,7 +33,7 @@ export default function LoginModal({
 
       dispatch(setLoggedInUser({username, password}));
       
-      toastNotify("Uspesna prijava! Dobrodosli!", "success");
+      toastNotify(`Uspesna prijava! Dobrodosli, ${username}!`, "success");
       navigate("/products");
       onClose();
     } catch (error) {

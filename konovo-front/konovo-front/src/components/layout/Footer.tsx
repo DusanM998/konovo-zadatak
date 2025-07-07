@@ -12,12 +12,13 @@ import siguranPartner from "../../assets/images/siguran-partner.png";
 import support from "../../assets/images/support.png";
 import uvekDostupni from "../../assets/images/uvek-dostupni.png";
 import { categoriesFooter } from "../../utility/types";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../storage/redux/store";
 import LoginModal from "../login/LoginModal";
-import footerImg from '../../assets/images/Footer-slika.png'
+import footerImg from "../../assets/images/Footer-slika.png";
+import toastNotify from "../../helper/toastNotify";
 
 const Footer = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -29,13 +30,14 @@ const Footer = () => {
     if (user.username) {
       navigate(`/products?categoryName=${encodeURIComponent(categoryName)}`);
     } else {
+      toastNotify("Prijavite se da biste nastavili.", "info");
       setPendingCategory(categoryName);
       setShowLoginModal(true);
     }
   };
 
   useEffect(() => {
-    if(user.username && pendingCategory){
+    if (user.username && pendingCategory) {
       navigate(`/products?categoryName=${encodeURIComponent(pendingCategory)}`);
       setPendingCategory(null);
     }
@@ -68,7 +70,11 @@ const Footer = () => {
           <p>Uvek otvoreni za saradnju.</p>
         </div>
         <div>
-          <img src={uvekDostupni} alt="Dostupni" className="mx-auto mb-2 h-12" />
+          <img
+            src={uvekDostupni}
+            alt="Dostupni"
+            className="mx-auto mb-2 h-12"
+          />
           <p className="font-semibold">UVEK DOSTUPNI</p>
           <p>Viber, Whatsapp, SMS, Poziv</p>
         </div>
@@ -90,15 +96,24 @@ const Footer = () => {
           </div>
 
           <div className="space-y-1">
-            <p className="flex items-center gap-2">
+            <a
+              href="tel:+381605858159"
+              className="flex items-center gap-2 hover:text-orange-500"
+            >
               <FaPhoneAlt /> +381 060 5858-159
-            </p>
-            <p className="flex items-center gap-2">
+            </a>
+            <a
+              href="tel:+381114543452"
+              className="flex items-center gap-2 hover:text-orange-500"
+            >
               <FaPhoneAlt /> 011/4543-452
-            </p>
-            <p className="flex items-center gap-2">
+            </a>
+            <a
+              href="mailto:prodaja@konovo.rs"
+              className="flex items-center gap-2 hover:text-orange-500"
+            >
               <FaEnvelope /> prodaja@konovo.rs
-            </p>
+            </a>
           </div>
 
           <div className="flex items-center gap-3 mt-4">
@@ -123,7 +138,7 @@ const Footer = () => {
             {categoriesFooter.map((categoryName) => (
               <li key={categoryName}>
                 <button
-                  className="hover:text-orange-500"
+                  className="hover:text-orange-500 cursor-pointer"
                   onClick={() => handleOfferClick(categoryName)}
                 >
                   {categoryName}
@@ -141,19 +156,19 @@ const Footer = () => {
                 Kontakt
               </a>
             </li>
-            
+
             <li>
-              <a onClick={() => handleOfferClick("")} className="hover:text-orange-500 cursor-pointer">
+              <a
+                onClick={() => handleOfferClick("")}
+                className="hover:text-orange-500 cursor-pointer"
+              >
                 Naš Asortiman
               </a>
             </li>
           </ul>
         </div>
         <div>
-          <img 
-            src={footerImg}
-            alt="footerImg"
-          />
+          <img src={footerImg} alt="footerImg" />
         </div>
       </div>
 

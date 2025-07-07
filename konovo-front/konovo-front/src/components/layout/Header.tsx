@@ -7,8 +7,8 @@ import { type RootState } from "../../storage/redux/store";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../storage/redux/userAuthSlice";
 import { useGetAllProductsQuery } from "../../apis/productApi";
-import type { ProductModel } from "../../interfaces/productModel";
-import { SearchedProducts } from "../Products";
+import { SearchedProducts } from "../Products/importsProducts";
+import toastNotify from "../../helper/toastNotify";
 
 const navItems = ["Proizvodi", "Kontakt"];
 
@@ -27,6 +27,7 @@ const Header = () => {
     if (user.username) {
       navigate("/products");
     } else {
+      toastNotify("Prijavite se da biste nastavili.", "info");
       setIsLoginModalOpen(true);
     }
   };
@@ -109,7 +110,10 @@ const Header = () => {
           <div className="block md:hidden">
             {user.username ? (
               <>
-                <span className="text-sm">
+                <span 
+                  className="text-sm cursor-pointer"
+                  onClick={() => navigate('/userProfile')}
+                >
                   Dobrodosli, <b>{user.username}</b>
                 </span>
                 <button
@@ -178,7 +182,10 @@ const Header = () => {
               <FaUser className="mr-1" />
               {user.username ? (
                 <>
-                  <span className="text-sm">
+                  <span 
+                    className="text-sm cursor-pointer"
+                    onClick={() => navigate('/userProfile')}  
+                  >
                     Dobrodosli, <b>{user.username}</b>
                   </span>
                   <button

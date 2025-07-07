@@ -13,6 +13,7 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import ProductCard from "./ProductCard";
+import MainLoader from "../../pages/common/MainLoader";
 
 export default function Products() {
   const [searchParams] = useSearchParams();
@@ -124,9 +125,7 @@ export default function Products() {
 
   if (isLoading) {
     return (
-      <div className="text-center mt-10 text-orange-600 font-semibold">
-        Ucitavanje proizvoda...
-      </div>
+      <MainLoader />
     );
   }
 
@@ -152,9 +151,8 @@ export default function Products() {
       <aside
         className={`bg-white border border-gray-300/50 rounded-lg p-4 w-full md:w-[200px] max-w-xs 
           md:static md:block z-10 transition-all duration-300 ease-in-out 
-          ${
-            mobileFilterOpen ? "block" : "hidden"
-          } md:h-auto md:overflow-visible h-[200px] overflow-y-auto`}
+          ${mobileFilterOpen ? "block" : "hidden"} h-[200px] overflow-y-auto 
+            md:h-[calc(100vh-150px)] md:overflow-y-auto`}
       >
         <div
           className="flex justify-between items-center cursor-pointer mb-2"

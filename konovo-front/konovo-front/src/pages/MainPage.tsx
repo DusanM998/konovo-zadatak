@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import LoginModal from "../components/login/LoginModal";
 import { useSelector } from "react-redux";
 import type { RootState } from "../storage/redux/store";
+import toastNotify from "../helper/toastNotify";
 
 const MainPage = () => {
   const [current, setCurrent] = useState(0);
@@ -16,6 +17,7 @@ const MainPage = () => {
     if (user.username) {
       navigate("/products");
     } else {
+      toastNotify("Prijavite se da biste nastavili.", "info");
       setShowLoginModal(true);
     }
   };
@@ -35,7 +37,9 @@ const MainPage = () => {
 
   const prevSlide = () =>
     setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
-  const nextSlide = () => setCurrent((prev) => (prev + 1) % slides.length);
+
+  const nextSlide = () => 
+    setCurrent((prev) => (prev + 1) % slides.length);
 
   return (
     <div className="relative max-w-6xl mx-auto mt-6 rounded-xl overflow-hidden shadow-lg h-[400px] mb-20">
@@ -108,9 +112,7 @@ const MainPage = () => {
         </div>
       </div>
       {showLoginModal && (
-        <LoginModal
-          onClose={() => setShowLoginModal(false)}
-        />
+        <LoginModal onClose={() => setShowLoginModal(false)} />
       )}
     </div>
   );

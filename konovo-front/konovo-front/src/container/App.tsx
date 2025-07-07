@@ -1,13 +1,13 @@
 import { Route, Routes } from "react-router-dom";
-import { Header } from "../components/layout";
+import { Header } from "../components/layout/importsLayout";
 import Footer from "../components/layout/Footer";
 import MainPage from "../pages/MainPage";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { setLoggedInUser } from "../storage/redux/userAuthSlice";
 import ProtectedRoute from "./ProtectedRoute";
-import { Products, SpecificProduct } from "../components/Products";
-import Kontakt from "../pages/Kontakt";
+import { Products, SpecificProduct } from "../components/Products/importsProducts";
+import { Kontakt, UserProfile } from "../pages";
 
 function App() {
   const dispatch = useDispatch();
@@ -37,6 +37,7 @@ function App() {
             ></Route>
             <Route path="/product/:id" element={<SpecificProduct />}></Route>
             <Route path="/kontakt" element={<Kontakt />}></Route>
+            <Route path="/userProfile" element={<UserProfile />}></Route>
         </Routes>
       </main>
       <Footer />
