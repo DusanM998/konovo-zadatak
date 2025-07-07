@@ -77,6 +77,8 @@ http://localhost:8000
 	- Ruta /login - prihvata JSON sa username i password i prosledjuje login zahtev eksternom API-u i zatim vraca token
 ## API Endpoints i komunikacija sa frontendom
 
+- Za pokretanje frontedn dela aplikacije najpre je neophodno instalirati sve zavisnosti komandom **npm install**, zatim se aplikacije pokrece sa **npm run dev**
+
 Frontend koristi Redux Toolkit Query za komunikaciju sa backendom:
 
 baseQuery: fetchBaseQuery({
