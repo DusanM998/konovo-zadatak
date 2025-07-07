@@ -59,7 +59,7 @@ http://localhost:8000
 
 ## Opis implementacije ## 
 
- -Klase i funkcionalnosti
+- Klase i funkcionalnosti
 
  1. ApiClient:
 	-Koristi Guzzle za autentifikaciju(login endpoint) i pristup eksternom API-u
@@ -77,7 +77,7 @@ http://localhost:8000
 	- Ruta /login - prihvata JSON sa username i password i prosledjuje login zahtev eksternom API-u i zatim vraca token
 ## API Endpoints i komunikacija sa frontendom
 
-- Za pokretanje frontedn dela aplikacije najpre je neophodno instalirati sve zavisnosti komandom **npm install**, zatim se aplikacije pokrece sa **npm run dev**
+- Za pokretanje frontend dela aplikacije najpre je neophodno instalirati sve zavisnosti komandom **npm install**, zatim se aplikacije pokrece sa **npm run dev**
 
 Frontend koristi Redux Toolkit Query za komunikaciju sa backendom:
 
