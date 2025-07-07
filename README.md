@@ -62,19 +62,19 @@ http://localhost:8000
 - Klase i funkcionalnosti
 
  **1. ApiClient:**
-	- Koristi Guzzle za autentifikaciju(login endpoint) i pristup eksternom API-u
-	- Cuva dobijeni JWT token i prosledjuje ga headerima u svakom zahtevu
+- Koristi Guzzle za autentifikaciju(login endpoint) i pristup eksternom API-u
+- Cuva dobijeni JWT token i prosledjuje ga headerima u svakom zahtevu
  **2. Product Service**
-	- Dobavlja proizvode sa eksternog API-a preko ApiClient
-	- Modifikuje cenu monitora (povecava je za 10%)
-	- Menja rec "brzina" u opisu proizvoda u "performanse"
-	- Omogucava filtriranje po kategoriji i pretragu po nazivu/opisu proizvoda
-	- Dobavlja pojedinacni proizvod o sif_product
+- Dobavlja proizvode sa eksternog API-a preko ApiClient
+- Modifikuje cenu monitora (povecava je za 10%)
+- Menja rec "brzina" u opisu proizvoda u "performanse"
+- Omogucava filtriranje po kategoriji i pretragu po nazivu/opisu proizvoda
+- Dobavlja pojedinacni proizvod o sif_product
  **3. index.php**
-	- Postavlja CORS zaglavlja za frontend pristup
-	- Ruta /procucts - vraca listu proizvoda sa opcionalnim filterima categoryName i search
-	- Ruta /products/{id} - vraca pojedinacni proizvod po ID-u
-	- Ruta /login - prihvata JSON sa username i password i prosledjuje login zahtev eksternom API-u i zatim vraca token
+- Postavlja CORS zaglavlja za frontend pristup
+- Ruta /procucts - vraca listu proizvoda sa opcionalnim filterima categoryName i search
+- Ruta /products/{id} - vraca pojedinacni proizvod po ID-u
+- Ruta /login - prihvata JSON sa username i password i prosledjuje login zahtev eksternom API-u i zatim vraca token
 ## API Endpoints i komunikacija sa frontendom
 
 - Za pokretanje frontend dela aplikacije najpre je neophodno instalirati sve zavisnosti komandom **npm install**, zatim se aplikacije pokrece sa **npm run dev**
