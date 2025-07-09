@@ -1,5 +1,8 @@
 import { useSearchParams } from "react-router-dom";
-import { useGetAllProductsQuery } from "../../apis/productApi";
+import {
+  useGetAllProductsQuery,
+  useGetPriceBoundsQuery,
+} from "../../apis/productApi";
 import type { ProductModel } from "../../interfaces/productModel";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -14,6 +17,7 @@ import {
 } from "react-icons/fa";
 import ProductCard from "./ProductCard";
 import MainLoader from "../../pages/common/MainLoader";
+import { Range } from "react-range";
 
 export default function Products() {
   const [searchParams] = useSearchParams();
@@ -32,11 +36,35 @@ export default function Products() {
 
   const [mobileFilterOpen, setMobileFilterOpen] = useState<boolean>(false);
 
+  const PRICE_STEP = 100;
+  const [isPriceOpen, setIsPriceOpen] = useState(false);
+  const [priceRange, setPriceRange] = useState<number[]>([0, 10000]);
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(10000);
+
+  const { data: bounds, isLoading: boundsLoading } = useGetPriceBoundsQuery();
+
+  console.log("Logujem price bounds: ", bounds);
+
   useEffect(() => {
     if (categoryFromQuery) {
       setSelectedCategory(categoryFromQuery);
     }
   }, [categoryFromQuery]);
+
+  useEffect(() => {
+    if (bounds) {
+      setPriceRange([bounds.min, bounds.max]);
+    }
+  }, [bounds]);
+
+  useEffect(() => {
+    if (bounds && bounds.min !== undefined && bounds.max !== undefined) {
+      setMinPrice(bounds.min);
+      setMaxPrice(bounds.max);
+      setPriceRange([bounds.min, bounds.max]);
+    }
+  }, [bounds]);
 
   const queryParams = useMemo(() => {
     const params: Record<string, string> = {};
@@ -46,8 +74,14 @@ export default function Products() {
     if (selectedBrand) {
       params.brandName = selectedBrand;
     }
+
+    if (priceRange.length === 2) {
+      params.minPrice = priceRange[0].toString();
+      params.maxPrice = priceRange[1].toString();
+    }
+
     return params;
-  }, [selectedCategory, selectedBrand]);
+  }, [selectedCategory, selectedBrand, priceRange]);
 
   // API poziv sa parametrom filtriranja
   const {
@@ -124,9 +158,7 @@ export default function Products() {
     : 1;
 
   if (isLoading) {
-    return (
-      <MainLoader />
-    );
+    return <MainLoader />;
   }
 
   if (isError) {
@@ -223,6 +255,53 @@ export default function Products() {
               </li>
             ))}
           </ul>
+        )}
+
+        <div
+          className="flex justify-between items-center cursor-pointer mb-2 mt-4"
+          onClick={() => setIsPriceOpen(!isPriceOpen)}
+        >
+          <h3 className="text-lg font-semibold">Cena</h3>
+          {isPriceOpen ? <FaChevronUp /> : <FaChevronDown />}
+        </div>
+
+        {isPriceOpen && (
+          <div className="mt-4">
+            <Range
+              step={PRICE_STEP}
+              min={minPrice}
+              max={maxPrice}
+              values={priceRange}
+              onChange={(values) => setPriceRange(values)}
+              renderTrack={({ props, children }) => (
+                <div
+                  {...props}
+                  className="h-2 bg-gray-200 rounded relative"
+                  style={{
+                    ...props.style,
+                    height: "6px",
+                    background: "linear-gradient(to right, #f3f4f6, #f97316)",
+                  }}
+                >
+                  {children}
+                </div>
+              )}
+              renderThumb={({ props }) => (
+                <div
+                  {...props}
+                  className="w-5 h-5 bg-orange-500 rounded-full shadow border-2 border-white"
+                />
+              )}
+            />
+            <div className="flex justify-between text-sm mt-2">
+              <span>
+                Od: <strong>{priceRange[0]} RSD</strong>
+              </span>
+              <span>
+                Do: <strong>{priceRange[1]} RSD</strong>
+              </span>
+            </div>
+          </div>
         )}
       </aside>
       <div className="flex-1 h-full overflow-y-auto pr-2 p-2">

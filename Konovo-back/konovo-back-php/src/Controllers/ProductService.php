@@ -21,7 +21,8 @@ class ProductService
         return $product;
     }
 
-    public function getProducts($category = null, $brandName = null, $search = null)
+    public function getProducts($category = null, $brandName = null, $search = null,
+        $minPrice = null, $maxPrice = null)
     {
         //dohvata sve proizvode sa eksternog api-ja
         $products = $this->apiClient->get('products');
@@ -52,7 +53,46 @@ class ProductService
             });
         }
 
+        if ($minPrice !== null || $maxPrice !== null) {
+            $products = array_filter($products, function ($p) use ($minPrice, $maxPrice) {
+                $price = $p['price'];
+                if ($minPrice !== null && $price < $minPrice) return false;
+                if ($maxPrice !== null && $price > $maxPrice) return false;
+                return true;
+            });
+        }
+
         return array_values($products);
+    }
+
+    /*public function getProductsByPriceRange(float $minPrice, float $maxPrice): array
+    {
+        $products = $this->apiClient->get('products');
+
+        $products = array_map([$this, 'processProduct'], $products);
+
+        $filtered = array_filter($products, function ($product) use ($minPrice, $maxPrice) {
+            return $product['price'] >= $minPrice && $product['price'] <= $maxPrice;
+        });
+
+        return array_values($filtered);
+    }*/
+
+    public function getPriceBounds(): array
+    {
+        $products = $this->apiClient->get('products');
+
+        $products = array_map([$this, 'processProduct'], $products);
+        $prices = array_column($products, 'price');
+
+        if (empty($prices)) {
+            return ['min' => 0, 'max' => 0];
+        }
+
+        return [
+            'min' => floor(min($prices)),
+            'max' => ceil(max($prices)),
+        ];
     }
 
     public function getProductById($id)

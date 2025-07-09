@@ -3,6 +3,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Src\Controllers\ProductService;
 use GuzzleHttp\Client;
+use Src\Controllers\ResponseController;
 
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
@@ -19,53 +20,65 @@ $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
 
 $productService = new ProductService();
+try {
+    if ($path === '/products' && $method === 'GET') {
+        $category = $_GET['categoryName'] ?? null;
+        $brandName = $_GET['brandName'] ?? null;
+        $search = $_GET['search'] ?? null;
+        $minPrice = isset($_GET['minPrice']) ? (float)$_GET['minPrice'] : null;
+        $maxPrice = isset($_GET['maxPrice']) ? (float)$_GET['maxPrice'] : null;
 
-if ($path === '/products' && $method === 'GET') {
-    $category = $_GET['categoryName'] ?? null;
-    $brandName = $_GET['brandName'] ?? null;
-    $search = $_GET['search'] ?? null;
-    $products = $productService->getProducts($category, $brandName, $search);
-    echo json_encode($products, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-
-} elseif (preg_match('/\/products\/(\d+)/', $path, $matches) && $method === 'GET') {
-    $id = $matches[1];
-    $product = $productService->getProductById($id);
-    if ($product) {
-        echo json_encode($product, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-    } else {
-        http_response_code(404);
-        echo json_encode(['error' => 'Product not found']);
-    }
-
-} elseif ($path === '/login' && $method === 'POST') {
-    $input = json_decode(file_get_contents("php://input"), true);
-    $username = $input['username'] ?? '';
-    $password = $input['password'] ?? '';
-
-    // Provera kredencijala (dummy auth)
-    if ($username === 'zadatak' && $password === 'zadatak') {
-        $client = new Client([
-            'base_uri' => 'https://zadatak.konovo.rs/',
-            'headers' => ['Accept' => 'application/json'],
-            'verify' => false
-        ]);
-
-        try {
-            $response = $client->post('login', [
-                'json' => ['username' => $username, 'password' => $password]
-            ]);
-            $body = json_decode($response->getBody(), true);
-            echo json_encode(['token' => $body['token']]);
-        } catch (\Exception $e) {
-            http_response_code(500);
-            echo json_encode(['error' => 'Greška prilikom dobijanja tokena.']);
+        $products = $productService->getProducts($category, $brandName, $search, $minPrice, $maxPrice);
+        ResponseController::respond(200, $products);
+    } elseif (preg_match('/\/products\/(\d+)/', $path, $matches) && $method === 'GET') {
+        $id = $matches[1];
+        $product = $productService->getProductById($id);
+        if ($product) {
+            ResponseController::respond(200, $product);
+        } else {
+            ResponseController::respond(404, ['error', "Product with ID: $id not found!"]);
         }
-    } else {
-        http_response_code(401);
-        echo json_encode(['error' => 'Neispravni kredencijali']);
-    }
+    } elseif ($path === '/login' && $method === 'POST') {
+        $input = json_decode(file_get_contents("php://input"), true);
+        $username = $input['username'] ?? '';
+        $password = $input['password'] ?? '';
 
-} else {
-    http_response_code(404);
-    echo json_encode(['error' => 'Not Found']);
+        if ($username !== 'zadatak' || $password !== 'zadatak') {
+            ResponseController::respond(401, ['error' => 'Wrong username or password!']);
+        }
+
+        // Provera kredencijala (dummy auth)
+        if ($username === 'zadatak' && $password === 'zadatak') {
+            $client = new Client([
+                'base_uri' => 'https://zadatak.konovo.rs/',
+                'headers' => ['Accept' => 'application/json'],
+                'verify' => false
+            ]);
+
+            try {
+                $response = $client->post('login', [
+                    'json' => ['username' => $username, 'password' => $password]
+                ]);
+                $body = json_decode($response->getBody(), true);
+                
+                ResponseController::respond(200, ['token' => $body['token']]);
+
+            } catch (\Exception $e) {
+                http_response_code(500);
+                echo json_encode(['error' => 'Greška prilikom dobijanja tokena.']);
+            }
+        } else {
+            ResponseController::respond(401, ['error' => "Wrong credentials!"]);
+        }
+    } elseif ($path === '/products/price-bounds' && $method === 'GET') {
+        $bounds = $productService->getPriceBounds();
+        ResponseController::respond(200, $bounds);
+    } else {
+        ResponseController::respond(404, ['error' => "Not Found!: " . $path]);
+    }
+} catch (\Throwable $e) {
+    ResponseController::respond(500, [
+        'error' => 'Došlo je do interne greške.',
+        'details' => $e->getMessage()
+    ]);
 }

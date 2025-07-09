@@ -19,12 +19,16 @@ export const productApi = createApi({
       query: (id) => `/products/${id}`,
       providesTags: (result, error, id) => [{ type: "Products", id }],
     }),
+    getPriceBounds: builder.query<any, void>({
+      query: () => `/products/price-bounds`,
+    }),
   }),
 });
 
 export const {
   useGetAllProductsQuery,
   useGetProductByIdQuery,
+  useGetPriceBoundsQuery,
 } = productApi;
 
 export default productApi;
