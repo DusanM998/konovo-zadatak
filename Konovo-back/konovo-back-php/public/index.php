@@ -1,6 +1,9 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
 
+//index.php je centralni router aplikacije. Prepoznaje HTTP rute i metode
+//i poziva odgovarajuce metode iz ProductService i drugih klasa
+
 use Src\Controllers\ProductService;
 use GuzzleHttp\Client;
 use Src\Controllers\ResponseController;
@@ -16,6 +19,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 header("Content-Type: application/json");
 
+//za obradjivanje ruta
+// php proverava putanju i metodu i poziva odg f-je
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -27,8 +32,9 @@ try {
         $search = $_GET['search'] ?? null;
         $minPrice = isset($_GET['minPrice']) ? (float)$_GET['minPrice'] : null;
         $maxPrice = isset($_GET['maxPrice']) ? (float)$_GET['maxPrice'] : null;
+        $sortOption = $_GET['sort'] ?? null;
 
-        $products = $productService->getProducts($category, $brandName, $search, $minPrice, $maxPrice);
+        $products = $productService->getProducts($category, $brandName, $search, $minPrice, $maxPrice, $sortOption);
         ResponseController::respond(200, $products);
     } elseif (preg_match('/\/products\/(\d+)/', $path, $matches) && $method === 'GET') {
         $id = $matches[1];
@@ -39,6 +45,8 @@ try {
             ResponseController::respond(404, ['error', "Product with ID: $id not found!"]);
         }
     } elseif ($path === '/login' && $method === 'POST') {
+        //php://input - ulazni tok u phpu koji omogucava citanje tela POST, PUT, DELETE, itd
+        // koristim ga da citam JSON podatke koje je frontend poslao
         $input = json_decode(file_get_contents("php://input"), true);
         $username = $input['username'] ?? '';
         $password = $input['password'] ?? '';

@@ -29,9 +29,10 @@ function App() {
         <Routes>
           <Route path="/" element={<MainPage />}></Route>
           <Route 
-            path="/products" 
+            path="/products"
+            /* ProtectedRoute omogucava zastitu ruta, tj ako korisnik nije prijavljen onemogucava mu se pristup toj ruti*/ 
             element={
-              <ProtectedRoute>
+              <ProtectedRoute> 
                 <Products />
               </ProtectedRoute>}
             ></Route>

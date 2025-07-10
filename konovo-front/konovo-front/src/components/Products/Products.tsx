@@ -18,11 +18,13 @@ import {
 import ProductCard from "./ProductCard";
 import MainLoader from "../../pages/common/MainLoader";
 import { Range } from "react-range";
+import debounce from "lodash.debounce";
 
 export default function Products() {
   const [searchParams] = useSearchParams();
   const categoryFromQuery = searchParams.get("categoryName");
 
+  //sa typescriptom eksplicitno definisem koji ce tip koristiti state
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
 
@@ -42,60 +44,92 @@ export default function Products() {
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(10000);
 
+  const [debouncedPriceRange, setDebouncedPriceRange] = useState(priceRange);
+
   const { data: bounds, isLoading: boundsLoading } = useGetPriceBoundsQuery();
 
-  console.log("Logujem price bounds: ", bounds);
+  /*console.log("Logujem price bounds: ", bounds);
 
+  console.log("Logujem selektovanu kategoriju: ", selectedCategory);
+
+  console.log("Logujem selektovani brend: ", selectedBrand);*/
+
+  //Inicijalno setovanje kategorije iz URL query-a
+  //omogucava da se automatski primeni filter kada se klikne na neku od kategorija
+  //to vodi dalje na link npr ...products?categoryName=Monitori
   useEffect(() => {
     if (categoryFromQuery) {
       setSelectedCategory(categoryFromQuery);
     }
   }, [categoryFromQuery]);
 
-  useEffect(() => {
-    if (bounds) {
-      setPriceRange([bounds.min, bounds.max]);
-    }
-  }, [bounds]);
+  //console.log("Logujem kategoriju iz query-a: ", categoryFromQuery);
 
   useEffect(() => {
     if (bounds && bounds.min !== undefined && bounds.max !== undefined) {
-      setMinPrice(bounds.min);
-      setMaxPrice(bounds.max);
-      setPriceRange([bounds.min, bounds.max]);
+      //zaokruzuje cenu u slideru na najblizi PRICE_STEP(100)
+      const adjustedMin = Math.ceil(bounds.min / PRICE_STEP) * PRICE_STEP;
+      const adjustedMax = Math.floor(bounds.max / PRICE_STEP) * PRICE_STEP;
+
+      setMinPrice(adjustedMin);
+      setMaxPrice(adjustedMax);
+
+      //postavlja pocetni priceRange
+      setPriceRange([adjustedMin, adjustedMax]);
     }
   }, [bounds]);
 
+  const debouncePriceChange = useMemo(
+    () =>
+      //debounce odlaze izvrsavanje f-je dok ne prodje 300ms u ovom slucaju
+      //ovde ga koristim jer kada pomeram slider, generisem puno promena
+      //pa onda ogranicim broj API poziva
+      //debounce f-ja ceka da prestanem da pomeram slider
+      // pa tek tada poziva f-ju sto znaci da imam jedan API poziv umesto vise njih
+      debounce((newRange: number[]) => {
+        setDebouncedPriceRange(newRange);
+      }, 300),
+    []
+  );
+
+  // kad god se `priceRange` menja (slider pomeran), pozovi debounce
+  useEffect(() => {
+    debouncePriceChange(priceRange);
+  }, [priceRange]);
+
+  //useMemo koristim za mem. vr. koje ne treba izracunavati svaki put kada se komponenta renderuje
   const queryParams = useMemo(() => {
     const params: Record<string, string> = {};
-    if (selectedCategory) {
-      params.categoryName = selectedCategory;
-    }
-    if (selectedBrand) {
-      params.brandName = selectedBrand;
+    if (selectedCategory) params.categoryName = selectedCategory;
+    if (selectedBrand) params.brandName = selectedBrand;
+
+    if (debouncedPriceRange.length === 2) {
+      params.minPrice = debouncedPriceRange[0].toString();
+      params.maxPrice = debouncedPriceRange[1].toString();
     }
 
-    if (priceRange.length === 2) {
-      params.minPrice = priceRange[0].toString();
-      params.maxPrice = priceRange[1].toString();
-    }
+    if (sortOption) params.sort = sortOption;
 
     return params;
-  }, [selectedCategory, selectedBrand, priceRange]);
+  }, [selectedCategory, selectedBrand, debouncedPriceRange, sortOption]);
 
-  // API poziv sa parametrom filtriranja
+  // poziva API filter sa parametrima za filtriranje
+  // (categoryName, brandName, minPrice, maxPrice)
+  // -> generisani su unutar queryParams
   const {
     data: products,
     isLoading,
     isError,
   } = useGetAllProductsQuery(queryParams);
 
+  //vadi sve kategorije iz liste proizvoda kako bi se prikazale u sidebaru za filter
   const categories = useMemo(() => {
     return Array.from(
-      new Set<string>(
+      new Set<string>( //Set koristim da bih automatski eliminisao duplikate
         products
-          ?.map((product: ProductModel) => product.categoryName)
-          .filter(Boolean)
+          ?.map((product: ProductModel) => product.categoryName) //prolazi kroz svaki el. u nizu products
+          //i vraca novi niz koji sadrzi samo categoryName iz svakog proizvoda
+          .filter(Boolean) //koristim da uklonim null, undefined ili ' ' vrednosti
       )
     ).sort();
   }, [products]);
@@ -110,6 +144,10 @@ export default function Products() {
     ).sort();
   }, [products]);
 
+  //useCallback se koristi za memorizaciju funkcija
+  //npr. on memorizuje funkcije i ako se one vise puta pozivaju sa istim par.
+  //onda funkcija ne preracunava svaki put ponovo rezultat
+  //sprecava re-render podkomponenti koje zavise od tih funkcija
   const handleCategoryClick = useCallback((category: string | null) => {
     setSelectedCategory(category);
   }, []);
@@ -118,44 +156,16 @@ export default function Products() {
     setSelectedBrand(brand);
   }, []);
 
-  const sortedProducts = useMemo(() => {
-    if (!products) {
-      return [];
-    }
-    const sorted = [...products];
-
-    switch (sortOption) {
-      case "name-asc":
-        sorted.sort((a, b) =>
-          a.naziv.toLowerCase().localeCompare(b.naziv.toLowerCase())
-        );
-        break;
-      case "name-desc":
-        sorted.sort((a, b) =>
-          b.naziv.toLowerCase().localeCompare(a.naziv.toLowerCase())
-        );
-        break;
-      case "price-asc":
-        sorted.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
-        break;
-      case "price-desc":
-        sorted.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
-        break;
-      default:
-        break;
-    }
-    return sorted;
-  }, [products, sortOption]);
-
+  // useMemo ovde pamti rezultat f-je i izracunava se
+  // samo kada se promeni products, currentPage ili itemsPerPage
   const paginatedProducts = useMemo(() => {
-    if (!sortedProducts) return [];
+    if (!products) return [];
     const startIndex = (currentPage - 1) * itemsPerPage;
-    return sortedProducts.slice(startIndex, startIndex + itemsPerPage);
-  }, [sortedProducts, currentPage, itemsPerPage]);
+    return products.slice(startIndex, startIndex + itemsPerPage); //slice vraca podniz proizvoda koji ce biti prikazani na trenutnoj stranici
+  }, [products, currentPage, itemsPerPage]);
 
-  const totalPages = sortedProducts
-    ? Math.ceil(sortedProducts.length / itemsPerPage)
-    : 1;
+  const totalPages = products ? Math.ceil(products.length / itemsPerPage) : 1; //racuna ukupan broj strana za paginaciju
+  // ceil sluzi da zaokruzi na ceo broj, npr ako imam 45 products / 10 per page = 4.5 => 5 strana
 
   if (isLoading) {
     return <MainLoader />;
@@ -286,12 +296,16 @@ export default function Products() {
                   {children}
                 </div>
               )}
-              renderThumb={({ props }) => (
-                <div
-                  {...props}
-                  className="w-5 h-5 bg-orange-500 rounded-full shadow border-2 border-white"
-                />
-              )}
+              renderThumb={({ props, index }) => {
+                const { key, ...restProps } = props;
+                return (
+                  <div
+                    key={key}
+                    {...restProps}
+                    className="w-5 h-5 bg-orange-500 rounded-full shadow border-2 border-white"
+                  />
+                );
+              }}
             />
             <div className="flex justify-between text-sm mt-2">
               <span>

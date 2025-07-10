@@ -1,13 +1,13 @@
 // features/api/productApi.ts
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-export const productApi = createApi({
+export const productApi = createApi({ //createApi - generise sve potrebno za komunikaciju sa REST back - om
   reducerPath: "productApi",
-  baseQuery: fetchBaseQuery({
+  baseQuery: fetchBaseQuery({ //fetchBaseQuery - f-ja iz Redux Toolkit Query za slanje HTTP zahteva prema serveru
     baseUrl: "http://localhost:8000", // PHP backend sa pristupom eksternom API-ju
   }),
   tagTypes: ["Products"],
-  endpoints: (builder) => ({
+  endpoints: (builder) => ({ //endpoinds - spisak svih API funkcionalnosti
     getAllProducts: builder.query({
       query: (params = {}) => {
         const searchParams = new URLSearchParams(params).toString();

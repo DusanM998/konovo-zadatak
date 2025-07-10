@@ -17,12 +17,21 @@ const Header = () => {
   const [search, setSearch] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
+  //vraca logovanog korisnika iz redux store-a
+  //useSelector koristim jer zelim da pristupim stanju iz redux store-a
   const user = useSelector((state: RootState) => state.userAuthStore);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch(); //useDispatch se koristi za slanje akcija prema redux store-u
+  
+  //debounced input pretrage sprecava visak API poziva
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  //za zatvaranje dropdown menija klikom van njega
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  //ako korisnik nije prijavljen, a zeli da otvori ponudu proizvoda
+  // otvara modal za prijavu
   const handleOfferClick = () => {
     if (user.username) {
       navigate("/products");
@@ -32,41 +41,52 @@ const Header = () => {
     }
   };
 
+  //poziva API da dohvati proizvode sa query hookom useGetAllProductsQuery
   const { data: results = [], isLoading } = useGetAllProductsQuery(
     debouncedSearch.length >= 2 ? { search: debouncedSearch } : {},
     { skip: debouncedSearch.length < 2 }
   );
 
+  //console.log("Rezultati pretrage: ", results);
+
+  //brise token iz localStorage - a i azurira stanje sa dispatch
   const handleLogout = () => {
     localStorage.removeItem("token");
     dispatch(logoutUser());
   };
 
+
+  //za pretragu - pokrece se svaki put kada se search string promeni
+  //
   useEffect(() => {
     const timer = setTimeout(() => {
-      setDebouncedSearch(search);
+      setDebouncedSearch(search); //debounce omogucava da se pozivi APIja ne desavaju svaki put kada korisik pritisne taster
+      //vec tek nakon sto prestane da kuca tj nakon 100ms
 
-      if (search.length >= 2) {
+      if (search.length >= 2) { //ako je search string duzi od 2 kar. otvara dropdown meni sa rezultatima pretrage
         setIsDropdownOpen(true);
       } else {
         setIsDropdownOpen(false);
       }
-    }, 300);
+    }, 100); //ceka 100ms pre nego sto izvrsi pretragu
 
-    return () => clearTimeout(timer);
+    return () => clearTimeout(timer); //cisti timer da se ne bi izvrsavao vise puta
   }, [search]);
 
+  //pokrece se samo pri mountovanju komponente i koristi se za
+  //dodavanje event listenera(f-ja koja osluskuje da li se dogodio neki dogadjaj
+  // i reaguje na njega) koji detektuje klik van dropdown menija
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
+        !dropdownRef.current.contains(event.target as Node) //proverava da li je kliknuto na element van dropdowna
       ) {
         setIsDropdownOpen(false); //Sakriva dropdown meni za search
       }
     };
 
-    document.addEventListener("mousedown", handleOutsideClick);
+    document.addEventListener("mousedown", handleOutsideClick); //"slusa" klikove na ceo dokument
 
     return () => {
       document.removeEventListener("mousedown", handleOutsideClick);

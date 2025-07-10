@@ -7,6 +7,10 @@ import { useDispatch } from "react-redux";
 import { setLoggedInUser } from "../../storage/redux/userAuthSlice";
 import { useNavigate } from "react-router-dom";
 
+//type moze da predstavlja objekat, uniju, primitivni tip, funkcije, itd...
+//type se koristi kada imam kompleksnije tipove
+// za razliku od interface koji se koristi ugl. kada se definisu
+// klase objekti ili se koristi OOP pristup
 type LoginModalProps = {
   onClose: () => void;
 };
@@ -21,17 +25,24 @@ export default function LoginModal({
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  //async f-ja moze da pauzira izvrsenje dok se ne zavrsi neka druga operacija
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+    e.preventDefault(); //sprecava reload stranice nakon submita
 
     try {
-      const result = await loginUser({ username, password }).unwrap();
-      console.log("Rezultat prijave:", result);
+      //unutar async f-ja moze da se koristi await da bi se sacekao rezultat asinhrone operacije
+      const result = await loginUser({ username, password }).unwrap(); //salje zahtev ka backu sa korisnickim podacima
+      // koristim unwrap da bih vratio rez. direktno iz response
+      // ako login uspe ovde result je direktno ono sto vraca back, tj. token
+      // ako ne uspe, unwrap baca gresku i poziva se catch odmah
+      console.log("Rezultat prijave(token):", result);
 
       localStorage.setItem("token", result.token);
       localStorage.setItem("username", username);
 
-      dispatch(setLoggedInUser({username, password}));
+      //dispatch je f-ja koja pokrece Redux akciju koja azurira Redux state userAuthSlice
+      // tako aplikacija zna da je korisnik ulogovan
+      dispatch(setLoggedInUser({username, password})); //azurira se stanje tj. userAuthSlice pomocu dispatch
       
       toastNotify(`Uspesna prijava! Dobrodosli, ${username}!`, "success");
       navigate("/products");
@@ -41,6 +52,10 @@ export default function LoginModal({
       toastNotify("Pogresno korisnicko ime ili lozinka!", "error");
     }
   }
+  //async f-ja uvek vraca Promise(objekat koji je rez. asinhrone operacije) -
+  // nesto sto se nece desiti odmah vec u buducnosti
+  // **ovde je vazno da vratim promise jer treba da sacekam da stigne rezultat
+  // pre nego sto nastavim sa navigacijom, dispatchom, prikazom toastNotifikacije...
 
   return (
     <div className="fixed inset-0 z-50 backdrop-blur-md bg-black/40 flex justify-center items-center p-4">
@@ -71,6 +86,9 @@ export default function LoginModal({
 
           <h2 className="text-2xl font-semibold mb-6 text-gray-700">Prijava</h2>
 
+          {/* kada se klikne na dugme Prijavi se, automatski se poziva f-ja handleSubmit
+            to je moguce zato sto sam na dugme dodao tip submit
+          */}
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
             <input
               type="text"

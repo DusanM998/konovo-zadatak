@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import type { ProductModel } from "../../interfaces/productModel";
+import { AnimatePresence, motion } from "framer-motion";
 
-interface SearchedProductsProps {
+type SearchedProductsProps = {
   results: ProductModel[];
   isOpen: boolean;
   isLoading: boolean;
@@ -21,12 +22,16 @@ const SearchedProducts = ({
   }
 
   return (
-    <>
+    <AnimatePresence>
       {/* Rezultati pretrage */}
       {results.length > 0 ? (
-        <ul
+        <motion.ul
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.3 }}
           className="absolute top-full left-0 w-full z-50 bg-white border border-gray-300 
-          rounded-b-lg shadow max-h-60 overflow-y-auto transition-all duration-200 ease-out transform origin-top"
+          rounded-b-lg shadow max-h-60 overflow-y-auto"
         >
           {results.map((product) => (
             <li key={product.sif_product}>
@@ -44,19 +49,22 @@ const SearchedProducts = ({
               </Link>
             </li>
           ))}
-        </ul>
+        </motion.ul>
       ) : (
         !isLoading && (
-          <div
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
             className="absolute top-full left-0 w-full z-50 bg-white border border-gray-300 
-            rounded-b-lg shadow px-4 py-2 text-sm text-gray-600 transition-all duration-200 ease-out transform origin-top"
-            onBlur={onClose}
+            rounded-b-lg shadow px-4 py-2 text-sm text-gray-600"
           >
             Nema rezultata.
-          </div>
+          </motion.div>
         )
       )}
-    </>
+    </AnimatePresence>
   );
 };
 

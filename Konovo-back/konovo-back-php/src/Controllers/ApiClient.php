@@ -11,7 +11,9 @@ class ApiClient
 
     public function __construct()
     {
+        
         $this->client = new \GuzzleHttp\Client([
+            //base_uri postavlja osnovnu adresu API-ja
             'base_uri' => 'https://zadatak.konovo.rs/',
             'headers' => ['Accept' => 'application/json'],
             'verify' => false, 
@@ -21,6 +23,9 @@ class ApiClient
 
     private function authenticate()
     {
+        //guzzle client salje POST zahtev na /login endpoind
+        //u telu salje username i password u JSON formatu
+        //i ocekuje se da API vrati JWT
         $response = $this->client->post('login', [
             'json' => [
                 'username' => $_ENV['API_USERNAME'] ?? 'zadatak',
@@ -36,6 +41,7 @@ class ApiClient
 
     public function get($uri)
     {
+        //cuvanje JWT-a i koristi zahteve kao Bearer token
         $response = $this->client->get($uri, [
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->token
